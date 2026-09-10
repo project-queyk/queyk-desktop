@@ -1,59 +1,110 @@
-# Welcome to Your New Wails3 Project!
+# Queyk Desktop: Earthquake Safety and Emergency Response Client
 
-Congratulations on generating your Wails3 application! This README will guide you through the next steps to get your project up and running.
+[![Status: Initial Scaffolding](https://img.shields.io/badge/Status-Initial_Scaffolding-orange.svg)](<>)
+[![Go](https://img.shields.io/badge/Go-1.25-00ADD8.svg?logo=go)](https://go.dev/)
+[![Wails](https://img.shields.io/badge/Wails-v3_Beta-DF0000.svg?logo=wails)](https://v3.wails.io/)
+[![React](https://img.shields.io/badge/React-18.2-61DAFB.svg?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue.svg?logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.0-646CFF.svg?logo=vite)](https://vite.dev/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Getting Started
+Queyk Desktop is the cross-platform desktop client for the Queyk earthquake safety and emergency response ecosystem, built with Go, Wails v3, React, and TypeScript.
 
-1. Navigate to your project directory in the terminal.
+> [!NOTE]
+> This project is currently in early development and initial scaffolding.
 
-2. To run your application in development mode, use the following command:
+---
 
+## 🛠 Tech Stack
+
+- **Backend / Desktop Runtime:** [Go 1.25+](https://go.dev/), [Wails v3](https://v3.wails.io/)
+- **Frontend:** [React 18](https://react.dev/), [TypeScript 5.2](https://www.typescriptlang.org/)
+- **Build Tooling & Bundler:** [Vite 8](https://vite.dev/), [Taskfile](https://taskfile.dev/)
+
+---
+
+## 📁 Project Structure
+
+```
+queyk-desktop/
+├── build/             # Build configurations, app icons, and platform scripts
+├── frontend/          # React + TypeScript frontend source
+│   ├── bindings/      # Auto-generated Go-to-TypeScript bindings
+│   ├── src/           # React components and styling
+│   ├── package.json   # Frontend dependencies and scripts
+│   └── vite.config.ts # Vite configuration
+├── greetservice.go    # Sample backend service
+├── main.go            # Application entrypoint & window configuration
+├── Taskfile.yml       # Task runner definitions
+├── go.mod             # Go module definition
+└── README.md          # Project documentation
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Go** (1.21 or newer, recommended 1.25+)
+- **Node.js** (v18 or newer) & **npm**
+- **Task** runner (`task`): [Installation Guide](https://taskfile.dev/installation/)
+- **Wails v3 CLI**:
+  ```bash
+  go install github.com/wailsapp/wails/v3/cmd/wails3@latest
+  ```
+- **Platform Dependencies**:
+  - **Linux**: `libgtk-3-dev`, `libwebkit2gtk-4.1-dev` (or distro equivalent)
+  - **macOS**: Xcode Command Line Tools
+  - **Windows**: WebView2 Runtime
+
+### Installation
+
+1. Clone or navigate to the project directory:
+
+   ```bash
+   cd queyk-desktop
    ```
-   wails3 dev
+
+2. Install frontend dependencies:
+   ```bash
+   cd frontend
+   npm install
+   cd ..
    ```
 
-   This will start your application and enable hot-reloading for both frontend and backend changes.
+### Running in Development
 
-3. To build your application for production, use:
+Start the application with live hot-reloading:
 
-   ```
-   wails3 build
-   ```
+```bash
+wails3 dev
+```
 
-   This will create a production-ready executable in the `build` directory.
+_(Or via Taskfile)_:
 
-## Exploring Wails3 Features
+```bash
+task dev
+```
 
-Now that you have your project set up, it's time to explore the features that Wails3 offers:
+### Building for Production
 
-1. **Check out the examples**: The best way to learn is by example. Visit the `examples` directory in the `v3/examples` directory to see various sample applications.
+Compile a native production binary:
 
-2. **Run an example**: To run any of the examples, navigate to the example's directory and use:
+```bash
+wails3 build
+```
 
-   ```
-   go run .
-   ```
+Or package for your platform:
 
-   Note: Some examples may be under development during the alpha phase.
+```bash
+task package
+```
 
-3. **Explore the documentation**: Visit the [Wails3 documentation](https://v3.wails.io/) for in-depth guides and API references.
+Output binaries will be placed in the `bin/` directory.
 
-4. **Join the community**: Have questions or want to share your progress? Join the [Wails Discord](https://discord.gg/JDdSxwjhGf) or visit the [Wails discussions on GitHub](https://github.com/wailsapp/wails/discussions).
+---
 
-## Project Structure
+## License
 
-Take a moment to familiarize yourself with your project structure:
-
-- `frontend/`: Contains your frontend code (HTML, CSS, JavaScript/TypeScript)
-- `main.go`: The entry point of your Go backend
-- `app.go`: Define your application structure and methods here
-- `wails.json`: Configuration file for your Wails project
-
-## Next Steps
-
-1. Modify the frontend in the `frontend/` directory to create your desired UI.
-2. Add backend functionality in `main.go`.
-3. Use `wails3 dev` to see your changes in real-time.
-4. When ready, build your application with `wails3 build`.
-
-Happy coding with Wails3! If you encounter any issues or have questions, don't hesitate to consult the documentation or reach out to the Wails community.
+This project is licensed under the [MIT License](LICENSE).
