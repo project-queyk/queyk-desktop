@@ -3,6 +3,7 @@ import { Events } from "@wailsio/runtime";
 import { useEffect, useState } from "react";
 import {
   createFileRoute,
+  isRedirect,
   Link,
   redirect,
   useNavigate,
@@ -18,13 +19,18 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/sign-in")({
   beforeLoad: async () => {
-    const { data } = await getSession();
+    try {
+      const { data } = await getSession();
 
-    if (data?.session) {
-      throw redirect({ to: "/" });
+      if (data?.session) {
+        throw redirect({ to: "/" });
+      }
+
+      return { user: data?.user };
+    } catch (err) {
+      if (isRedirect(err)) throw err;
+      return { user: null };
     }
-
-    return { user: data?.user };
   },
   component: RouteComponent,
 });
