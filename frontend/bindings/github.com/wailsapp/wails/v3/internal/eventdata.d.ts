@@ -8,6 +8,7 @@ import type { Events } from "@wailsio/runtime";
 declare module "@wailsio/runtime" {
     namespace Events {
         interface CustomEvents {
+            "auth-window-closed": string;
             "time": string;
         }
     }

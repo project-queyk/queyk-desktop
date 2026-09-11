@@ -1,4 +1,4 @@
-module changeme
+module queyk
 
 go 1.25.0
 

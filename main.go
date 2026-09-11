@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"queyk/internal/auth"
 
 	"log"
 	"time"
@@ -22,6 +23,7 @@ func init() {
 	// This is not required, but the binding generator will pick up registered events
 	// and provide a strongly typed JS/TS API for them.
 	application.RegisterEvent[string]("time")
+	application.RegisterEvent[string]("auth-window-closed")
 }
 
 // main function serves as the application's entry point. It initializes the application, creates a window,
@@ -38,7 +40,7 @@ func main() {
 		Name:        "Queyk",
 		Description: "Desktop client for Queyk",
 		Services: []application.Service{
-			application.NewService(&GreetService{}),
+			application.NewService(&auth.Service{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
