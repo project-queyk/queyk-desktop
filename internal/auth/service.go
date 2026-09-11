@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"time"
+
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/events"
 )
@@ -12,7 +14,9 @@ func (s *Service) OpenAuthWindow(url string) {
 	if s.authWindow != nil {
 		win := s.authWindow
 		s.authWindow = nil
-		win.Close()
+		time.AfterFunc(100*time.Millisecond, func() {
+			win.Close()
+		})
 	}
 
 	app := application.Get()
@@ -48,6 +52,8 @@ func (s *Service) CloseAuthWindow() {
 	if s.authWindow != nil {
 		win := s.authWindow
 		s.authWindow = nil
-		win.Close()
+		time.AfterFunc(100*time.Millisecond, func() {
+			win.Close()
+		})
 	}
 }
