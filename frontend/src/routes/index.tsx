@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   createFileRoute,
+  isRedirect,
   redirect,
   useNavigate,
   useRouter,
@@ -11,13 +12,24 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
-    const { data } = await getSession();
+    try {
+      const { data } = await getSession();
 
-    if (!data?.session) {
+      if (!data?.session) {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("bearer_token");
+        }
+        throw redirect({ to: "/sign-in" });
+      }
+
+      return { user: data?.user };
+    } catch (err) {
+      if (isRedirect(err)) throw err;
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("bearer_token");
+      }
       throw redirect({ to: "/sign-in" });
     }
-
-    return { user: data?.user };
   },
   component: Index,
 });
