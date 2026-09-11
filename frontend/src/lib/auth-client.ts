@@ -18,6 +18,11 @@ export const authClient = createAuthClient({
         localStorage.setItem("bearer_token", authToken);
       }
     },
+    onError: (ctx) => {
+      if (ctx.response?.status === 401 && typeof window !== "undefined") {
+        localStorage.removeItem("bearer_token");
+      }
+    },
   },
 });
 
