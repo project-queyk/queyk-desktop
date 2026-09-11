@@ -2,7 +2,16 @@ import { useEffect, useState } from "react";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 
 const RootLayout = () => {
-  const [isPopup, setIsPopup] = useState(false);
+  const [isPopup] = useState(() => {
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      return (
+        url.searchParams.get("popup") === "true" ||
+        Boolean(url.searchParams.get("token"))
+      );
+    }
+    return false;
+  });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -12,7 +21,6 @@ const RootLayout = () => {
       const error = url.searchParams.get("error");
 
       if (isPopupParam || token) {
-        setIsPopup(true);
         const channel = new BroadcastChannel("auth_channel");
         if (token) {
           localStorage.setItem("bearer_token", token);

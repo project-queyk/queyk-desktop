@@ -45,6 +45,9 @@ function RouteComponent() {
       if (event.data?.type === "LOGIN_SUCCESS") {
         CloseAuthWindow().catch(() => {});
         setLoading(false);
+        if (event.data?.token) {
+          localStorage.setItem("bearer_token", event.data.token);
+        }
         navigate({ to: "/" });
       } else if (event.data?.type === "LOGIN_ERROR") {
         CloseAuthWindow().catch(() => {});
@@ -56,22 +59,12 @@ function RouteComponent() {
       }
     };
 
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === "bearer_token" && e.newValue) {
-        CloseAuthWindow().catch(() => {});
-        setLoading(false);
-        navigate({ to: "/" });
-      }
-    };
-    window.addEventListener("storage", handleStorage);
-
     const unsubClose = Events.On("auth-window-closed", () => {
       setLoading(false);
     });
 
     return () => {
       channel.close();
-      window.removeEventListener("storage", handleStorage);
       unsubClose();
     };
   }, [navigate]);

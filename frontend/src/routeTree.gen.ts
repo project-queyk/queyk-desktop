@@ -9,17 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as MainRouteImport } from './routes/_main'
 import { Route as ErrorRouteImport } from './routes/error'
-import { Route as EvacuationPlanRouteImport } from './routes/evacuation-plan'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as ProtocolsRouteImport } from './routes/protocols'
 import { Route as SignInRouteImport } from './routes/sign-in'
-import { Route as UserManagementRouteImport } from './routes/user-management'
+import { Route as MainIndexRouteImport } from './routes/_main/index'
+import { Route as MainEvacuationPlanRouteImport } from './routes/_main/evacuation-plan'
+import { Route as MainProfileRouteImport } from './routes/_main/profile'
+import { Route as MainProtocolsRouteImport } from './routes/_main/protocols'
+import { Route as MainUserManagementRouteImport } from './routes/_main/user-management'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const MainRoute = MainRouteImport.update({
+  id: '/_main',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ErrorRoute = ErrorRouteImport.update({
@@ -27,107 +27,110 @@ const ErrorRoute = ErrorRouteImport.update({
   path: '/error',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EvacuationPlanRoute = EvacuationPlanRouteImport.update({
-  id: '/evacuation-plan',
-  path: '/evacuation-plan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProtocolsRoute = ProtocolsRouteImport.update({
-  id: '/protocols',
-  path: '/protocols',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UserManagementRoute = UserManagementRouteImport.update({
+const MainIndexRoute = MainIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MainRoute,
+} as any)
+const MainEvacuationPlanRoute = MainEvacuationPlanRouteImport.update({
+  id: '/evacuation-plan',
+  path: '/evacuation-plan',
+  getParentRoute: () => MainRoute,
+} as any)
+const MainProfileRoute = MainProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => MainRoute,
+} as any)
+const MainProtocolsRoute = MainProtocolsRouteImport.update({
+  id: '/protocols',
+  path: '/protocols',
+  getParentRoute: () => MainRoute,
+} as any)
+const MainUserManagementRoute = MainUserManagementRouteImport.update({
   id: '/user-management',
   path: '/user-management',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => MainRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof MainIndexRoute
   '/error': typeof ErrorRoute
-  '/evacuation-plan': typeof EvacuationPlanRoute
-  '/profile': typeof ProfileRoute
-  '/protocols': typeof ProtocolsRoute
   '/sign-in': typeof SignInRoute
-  '/user-management': typeof UserManagementRoute
+  '/evacuation-plan': typeof MainEvacuationPlanRoute
+  '/profile': typeof MainProfileRoute
+  '/protocols': typeof MainProtocolsRoute
+  '/user-management': typeof MainUserManagementRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/error': typeof ErrorRoute
-  '/evacuation-plan': typeof EvacuationPlanRoute
-  '/profile': typeof ProfileRoute
-  '/protocols': typeof ProtocolsRoute
   '/sign-in': typeof SignInRoute
-  '/user-management': typeof UserManagementRoute
+  '/evacuation-plan': typeof MainEvacuationPlanRoute
+  '/profile': typeof MainProfileRoute
+  '/protocols': typeof MainProtocolsRoute
+  '/user-management': typeof MainUserManagementRoute
+  '/': typeof MainIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_main': typeof MainRouteWithChildren
   '/error': typeof ErrorRoute
-  '/evacuation-plan': typeof EvacuationPlanRoute
-  '/profile': typeof ProfileRoute
-  '/protocols': typeof ProtocolsRoute
   '/sign-in': typeof SignInRoute
-  '/user-management': typeof UserManagementRoute
+  '/_main/evacuation-plan': typeof MainEvacuationPlanRoute
+  '/_main/profile': typeof MainProfileRoute
+  '/_main/protocols': typeof MainProtocolsRoute
+  '/_main/user-management': typeof MainUserManagementRoute
+  '/_main/': typeof MainIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/error'
+    | '/sign-in'
     | '/evacuation-plan'
     | '/profile'
     | '/protocols'
-    | '/sign-in'
     | '/user-management'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/error'
+    | '/sign-in'
     | '/evacuation-plan'
     | '/profile'
     | '/protocols'
-    | '/sign-in'
     | '/user-management'
+    | '/'
   id:
     | '__root__'
-    | '/'
+    | '/_main'
     | '/error'
-    | '/evacuation-plan'
-    | '/profile'
-    | '/protocols'
     | '/sign-in'
-    | '/user-management'
+    | '/_main/evacuation-plan'
+    | '/_main/profile'
+    | '/_main/protocols'
+    | '/_main/user-management'
+    | '/_main/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  MainRoute: typeof MainRouteWithChildren
   ErrorRoute: typeof ErrorRoute
-  EvacuationPlanRoute: typeof EvacuationPlanRoute
-  ProfileRoute: typeof ProfileRoute
-  ProtocolsRoute: typeof ProtocolsRoute
   SignInRoute: typeof SignInRoute
-  UserManagementRoute: typeof UserManagementRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_main': {
+      id: '/_main'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof MainRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/error': {
@@ -137,27 +140,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErrorRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/evacuation-plan': {
-      id: '/evacuation-plan'
-      path: '/evacuation-plan'
-      fullPath: '/evacuation-plan'
-      preLoaderRoute: typeof EvacuationPlanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/protocols': {
-      id: '/protocols'
-      path: '/protocols'
-      fullPath: '/protocols'
-      preLoaderRoute: typeof ProtocolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
@@ -165,24 +147,66 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/user-management': {
-      id: '/user-management'
+    '/_main/': {
+      id: '/_main/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof MainIndexRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/_main/evacuation-plan': {
+      id: '/_main/evacuation-plan'
+      path: '/evacuation-plan'
+      fullPath: '/evacuation-plan'
+      preLoaderRoute: typeof MainEvacuationPlanRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/_main/profile': {
+      id: '/_main/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof MainProfileRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/_main/protocols': {
+      id: '/_main/protocols'
+      path: '/protocols'
+      fullPath: '/protocols'
+      preLoaderRoute: typeof MainProtocolsRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/_main/user-management': {
+      id: '/_main/user-management'
       path: '/user-management'
       fullPath: '/user-management'
-      preLoaderRoute: typeof UserManagementRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof MainUserManagementRouteImport
+      parentRoute: typeof MainRoute
     }
   }
 }
 
+interface MainRouteChildren {
+  MainEvacuationPlanRoute: typeof MainEvacuationPlanRoute
+  MainProfileRoute: typeof MainProfileRoute
+  MainProtocolsRoute: typeof MainProtocolsRoute
+  MainUserManagementRoute: typeof MainUserManagementRoute
+  MainIndexRoute: typeof MainIndexRoute
+}
+
+const MainRouteChildren: MainRouteChildren = {
+  MainEvacuationPlanRoute: MainEvacuationPlanRoute,
+  MainProfileRoute: MainProfileRoute,
+  MainProtocolsRoute: MainProtocolsRoute,
+  MainUserManagementRoute: MainUserManagementRoute,
+  MainIndexRoute: MainIndexRoute,
+}
+
+const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  MainRoute: MainRouteWithChildren,
   ErrorRoute: ErrorRoute,
-  EvacuationPlanRoute: EvacuationPlanRoute,
-  ProfileRoute: ProfileRoute,
-  ProtocolsRoute: ProtocolsRoute,
   SignInRoute: SignInRoute,
-  UserManagementRoute: UserManagementRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
