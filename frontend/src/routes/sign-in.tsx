@@ -134,7 +134,7 @@ function RouteComponent() {
       </div>
       <p className="text-sm">
         By signing in, you agree to our{" "}
-        <Link to="/protocols" className="underline">
+        <Link to="/privacy" className="underline">
           Privacy Policy
         </Link>
         .

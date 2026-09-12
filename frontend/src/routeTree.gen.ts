@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MainRouteImport } from './routes/_main'
 import { Route as ErrorRouteImport } from './routes/error'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
 import { Route as MainEvacuationPlanRouteImport } from './routes/_main/evacuation-plan'
@@ -25,6 +26,11 @@ const MainRoute = MainRouteImport.update({
 const ErrorRoute = ErrorRouteImport.update({
   id: '/error',
   path: '/error',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignInRoute = SignInRouteImport.update({
@@ -61,6 +67,7 @@ const MainUserManagementRoute = MainUserManagementRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof MainIndexRoute
   '/error': typeof ErrorRoute
+  '/privacy': typeof PrivacyRoute
   '/sign-in': typeof SignInRoute
   '/evacuation-plan': typeof MainEvacuationPlanRoute
   '/profile': typeof MainProfileRoute
@@ -69,6 +76,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/error': typeof ErrorRoute
+  '/privacy': typeof PrivacyRoute
   '/sign-in': typeof SignInRoute
   '/evacuation-plan': typeof MainEvacuationPlanRoute
   '/profile': typeof MainProfileRoute
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_main': typeof MainRouteWithChildren
   '/error': typeof ErrorRoute
+  '/privacy': typeof PrivacyRoute
   '/sign-in': typeof SignInRoute
   '/_main/evacuation-plan': typeof MainEvacuationPlanRoute
   '/_main/profile': typeof MainProfileRoute
@@ -92,6 +101,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/error'
+    | '/privacy'
     | '/sign-in'
     | '/evacuation-plan'
     | '/profile'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/error'
+    | '/privacy'
     | '/sign-in'
     | '/evacuation-plan'
     | '/profile'
@@ -110,6 +121,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_main'
     | '/error'
+    | '/privacy'
     | '/sign-in'
     | '/_main/evacuation-plan'
     | '/_main/profile'
@@ -121,6 +133,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   MainRoute: typeof MainRouteWithChildren
   ErrorRoute: typeof ErrorRoute
+  PrivacyRoute: typeof PrivacyRoute
   SignInRoute: typeof SignInRoute
 }
 
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       path: '/error'
       fullPath: '/error'
       preLoaderRoute: typeof ErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sign-in': {
@@ -206,6 +226,7 @@ const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   MainRoute: MainRouteWithChildren,
   ErrorRoute: ErrorRoute,
+  PrivacyRoute: PrivacyRoute,
   SignInRoute: SignInRoute,
 }
 export const routeTree = rootRouteImport
