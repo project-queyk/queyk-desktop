@@ -124,7 +124,7 @@ function Dashboard() {
         if (!date?.from || !date?.to) return null;
 
         const baseUrl =
-          import.meta.env.VITE_AUTH_BASE_URL || "http://localhost:8080";
+          import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
         const token =
           typeof window !== "undefined"
             ? localStorage.getItem("bearer_token") || ""
@@ -170,7 +170,7 @@ function Dashboard() {
   const { mutate: resetIoT, isPending: resetIoTIsPending } = useMutation({
     mutationFn: async () => {
       const baseUrl =
-        import.meta.env.VITE_AUTH_BASE_URL || "http://localhost:8080";
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
       const token =
         typeof window !== "undefined"
           ? localStorage.getItem("bearer_token") || ""
