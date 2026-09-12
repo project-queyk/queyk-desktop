@@ -22,10 +22,10 @@ export const Route = createFileRoute("/error")({
       error: typeof search.error === "string" ? search.error : undefined,
     };
   },
-  component: ErrorPage,
+  component: Error,
 });
 
-export default function ErrorPage() {
+function Error() {
   const { error } = Route.useSearch();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();

@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/card";
 
 export const Route = createFileRoute("/privacy")({
-  component: RouteComponent,
+  component: Privacy,
 });
 
-function RouteComponent() {
+function Privacy() {
   return (
     <>
       <header className="mx-6 my-4 flex items-center justify-between">

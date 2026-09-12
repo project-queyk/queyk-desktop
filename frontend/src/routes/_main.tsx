@@ -7,9 +7,10 @@ import {
 
 import { getSession, useSession } from "@/lib/auth-client";
 
-import Header from "@/components/Header";
-import { AppSidebar } from "@/components/Sidebar";
+import Header from "@/components/shared/Header";
+import { AppSidebar } from "@/components/shared/Sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 export const Route = createFileRoute("/_main")({
   beforeLoad: async () => {
@@ -46,13 +47,15 @@ function MainLayout() {
 
   return (
     <SidebarProvider>
-      <AppSidebar session={session} />
-      <main className="w-full">
-        <Header />
-        <div className="mx-5 mb-5">
-          <Outlet />
-        </div>
-      </main>
+      <QueryProvider>
+        <AppSidebar session={session} />
+        <main className="w-full">
+          <Header />
+          <div className="mx-5 mb-5">
+            <Outlet />
+          </div>
+        </main>
+      </QueryProvider>
     </SidebarProvider>
   );
 }

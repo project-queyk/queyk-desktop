@@ -32,10 +32,10 @@ export const Route = createFileRoute("/sign-in")({
       return { user: null };
     }
   },
-  component: RouteComponent,
+  component: SignIn,
 });
 
-function RouteComponent() {
+function SignIn() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
