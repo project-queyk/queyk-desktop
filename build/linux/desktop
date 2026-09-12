@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
-Name=My Product
-Comment=A queyk-desktop application
+Name=Queyk
+Comment=Desktop client for Quey
 # The Exec line includes %u to pass the URL to the application
 Exec=/usr/local/bin/queyk-desktop %u
 Terminal=false
