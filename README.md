@@ -206,7 +206,7 @@ Create a `.env` file in the project root:
 
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/queyk?sslmode=disable
-VITE_AUTH_BASE_URL=http://localhost:8080
+VITE_API_BASE_URL=http://localhost:8080
 ```
 
 ### Installation
