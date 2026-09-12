@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ChevronsUpDown } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -15,7 +16,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/components/providers/ThemeProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -40,6 +48,7 @@ export const Route = createFileRoute("/_main/profile")({
 });
 
 function Profile() {
+  const { setTheme, theme } = useTheme();
   const queryClient = useQueryClient();
   const { data: session } = useSession();
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -174,7 +183,7 @@ function Profile() {
           <CardTitle>Personal Information</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 flex flex-row items-center justify-between gap-2">
+          <div className="flex flex-row items-center justify-between gap-2">
             <div className="grid items-center gap-1">
               <p className="text-foreground/80 text-sm">Phone Number:</p>
               {userDataIsLoading ? (
@@ -354,6 +363,32 @@ function Profile() {
                 }
               />
             </div>
+          </div>
+          <div className="flex flex-row items-center justify-between gap-2">
+            <div className="text-foreground/80 text-sm">
+              Customize the application appearance to match your preferred
+              theme.
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button variant="ghost">
+                  <span>{theme.charAt(0).toUpperCase() + theme.slice(1)}</span>
+                  <ChevronsUpDown className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </CardContent>
       </Card>
