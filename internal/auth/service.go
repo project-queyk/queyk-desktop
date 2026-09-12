@@ -34,7 +34,7 @@ func (s *Service) OpenAuthWindow(url string) {
 
 	s.authWindow = win
 
-	win.OnWindowEvent(events.Common.WindowClosing, func(event *application.WindowEvent) {
+	win.OnWindowEvent(events.Common.WindowClosing, func(e *application.WindowEvent) {
 		s.mu.Lock()
 		s.authWindow = nil
 		s.mu.Unlock()

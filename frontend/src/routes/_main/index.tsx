@@ -67,7 +67,7 @@ export const Route = createFileRoute("/_main/")({
         throw redirect({ to: "/evacuation-plan" });
       }
 
-      return { user: data?.user };
+      return {};
     } catch (err) {
       if (isRedirect(err)) throw err;
       if (typeof window !== "undefined") {
@@ -721,7 +721,7 @@ function Dashboard() {
                   ? skeletonReadingChartConfig
                   : readingChartConfig
               }
-              className="aspect-auto h-[250px] w-full"
+              className="aspect-auto h-62.5 w-full"
             >
               <LineChart
                 accessibilityLayer
@@ -790,9 +790,7 @@ function Dashboard() {
                   dataKey="siAverage"
                   type="monotone"
                   stroke={
-                    readingsDataIsLoading
-                      ? "#d1d5db"
-                      : "var(--color-siAverage)"
+                    readingsDataIsLoading ? "#d1d5db" : "var(--color-siAverage)"
                   }
                   strokeWidth={2}
                   dot={false}
@@ -801,9 +799,7 @@ function Dashboard() {
                   dataKey="siMaximum"
                   type="monotone"
                   stroke={
-                    readingsDataIsLoading
-                      ? "#e5e7eb"
-                      : "var(--color-siMaximum)"
+                    readingsDataIsLoading ? "#e5e7eb" : "var(--color-siMaximum)"
                   }
                   strokeWidth={2}
                   dot={false}
@@ -812,9 +808,7 @@ function Dashboard() {
                   dataKey="siMinimum"
                   type="monotone"
                   stroke={
-                    readingsDataIsLoading
-                      ? "#f3f4f6"
-                      : "var(--color-siMinimum)"
+                    readingsDataIsLoading ? "#f3f4f6" : "var(--color-siMinimum)"
                   }
                   strokeWidth={2}
                   dot={false}
@@ -841,7 +835,7 @@ function Dashboard() {
                   ? skeletonEarthquakeConfig
                   : earthquakeChartConfig
               }
-              className="aspect-auto h-[250px] w-full"
+              className="aspect-auto h-62.5 w-full"
             >
               <LineChart
                 accessibilityLayer
@@ -910,18 +904,14 @@ function Dashboard() {
                                     ? (() => {
                                         const dur = data.duration;
                                         if (dur >= 3600) {
-                                          const hours = Math.floor(
-                                            dur / 3600,
-                                          );
+                                          const hours = Math.floor(dur / 3600);
                                           const minutes = Math.floor(
                                             (dur % 3600) / 60,
                                           );
                                           return `${hours}h ${minutes}m ${dur % 60}s`;
                                         }
                                         if (dur >= 60) {
-                                          const minutes = Math.floor(
-                                            dur / 60,
-                                          );
+                                          const minutes = Math.floor(dur / 60);
                                           return `${minutes}m ${dur % 60}s`;
                                         }
                                         return `${dur}s`;
@@ -941,9 +931,7 @@ function Dashboard() {
                   dataKey="magnitude"
                   type="monotone"
                   stroke={
-                    earthquakeDataIsLoading
-                      ? "#e5e7eb"
-                      : "hsl(var(--chart-1))"
+                    earthquakeDataIsLoading ? "#e5e7eb" : "hsl(var(--chart-1))"
                   }
                   strokeWidth={2}
                   dot={false}
@@ -1044,7 +1032,7 @@ function Dashboard() {
                   ? skeletonEarthquakeConfig
                   : earthquakeChartConfig
               }
-              className="aspect-auto h-[250px] w-full"
+              className="aspect-auto h-62.5 w-full"
             >
               <LineChart
                 accessibilityLayer
@@ -1113,18 +1101,14 @@ function Dashboard() {
                                     ? (() => {
                                         const dur = data.duration;
                                         if (dur >= 3600) {
-                                          const hours = Math.floor(
-                                            dur / 3600,
-                                          );
+                                          const hours = Math.floor(dur / 3600);
                                           const minutes = Math.floor(
                                             (dur % 3600) / 60,
                                           );
                                           return `${hours}h ${minutes}m ${dur % 60}s`;
                                         }
                                         if (dur >= 60) {
-                                          const minutes = Math.floor(
-                                            dur / 60,
-                                          );
+                                          const minutes = Math.floor(dur / 60);
                                           return `${minutes}m ${dur % 60}s`;
                                         }
                                         return `${dur}s`;
@@ -1144,9 +1128,7 @@ function Dashboard() {
                   dataKey="magnitude"
                   type="monotone"
                   stroke={
-                    earthquakeDataIsLoading
-                      ? "#e5e7eb"
-                      : "hsl(var(--chart-1))"
+                    earthquakeDataIsLoading ? "#e5e7eb" : "hsl(var(--chart-1))"
                   }
                   strokeWidth={2}
                   dot={false}
