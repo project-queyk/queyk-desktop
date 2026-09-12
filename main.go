@@ -1,63 +1,79 @@
 package main
 
 import (
+	"context"
 	"embed"
+	postgres "queyk/internal/adapters/postgresql/sqlc"
 	"queyk/internal/auth"
+	"queyk/internal/dashboard"
+	"queyk/internal/envutil"
+	"queyk/internal/users"
 
 	"log"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
-
-// Wails uses Go's `embed` package to embed the frontend files into the binary.
-// Any files in the frontend/dist folder will be embedded into the binary and
-// made available to the frontend.
-// See https://pkg.go.dev/embed for more information.
 
 //go:embed all:frontend/dist
 var assets embed.FS
 
 func init() {
-	// Register a custom event whose associated data type is string.
-	// This is not required, but the binding generator will pick up registered events
-	// and provide a strongly typed JS/TS API for them.
 	application.RegisterEvent[string]("time")
 	application.RegisterEvent[string]("auth-window-closed")
 }
 
-// main function serves as the application's entry point. It initializes the application, creates a window,
-// and starts a goroutine that emits a time-based event every second. It subsequently runs the application and
-// logs any error that might occur.
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("failed to load .env file: %v", err)
+	}
 
-	// Create a new Wails application by providing the necessary options.
-	// Variables 'Name' and 'Description' are for application metadata.
-	// 'Assets' configures the asset server with the 'FS' variable pointing to the frontend files.
-	// 'Bind' is a list of Go struct instances. The frontend has access to the methods of these instances.
-	// 'Mac' options tailor the application when running an macOS.
+	dbUrl := envutil.GetRequired("DATABASE_URL")
+
+	ctx := context.Background()
+
+	config, err := pgxpool.ParseConfig(dbUrl)
+	if err != nil {
+		log.Fatalf("failed to parse db config: %v", err)
+	}
+	config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
+
+	pool, err := pgxpool.NewWithConfig(ctx, config)
+	if err != nil {
+		log.Fatalf("failed to create db pool: %v", err)
+	}
+	defer pool.Close()
+
+	queries := postgres.New(pool)
+
+	userSvc := users.NewService(queries)
+	dashboardSvc := dashboard.NewService(queries)
+
 	app := application.New(application.Options{
 		Name:        "Queyk",
 		Description: "Desktop client for Queyk",
 		Services: []application.Service{
 			application.NewService(&auth.Service{}),
+			application.NewService(userSvc),
+			application.NewService(dashboardSvc),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
+		},
+		Linux: application.LinuxOptions{
+			ProgramName: "queyk",
 		},
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: true,
 		},
 	})
 
-	// Create a new window with the necessary options.
-	// 'Title' is the title of the window.
-	// 'Mac' options tailor the window when running on macOS.
-	// 'BackgroundColour' is the background colour of the window.
-	// 'URL' is the URL that will be loaded into the webview.
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title: "Queyk",
-		// Window sized to the golden ratio (1000 / 618 ≈ 1.618).
+		Title:  "Queyk",
 		Width:  1000,
 		Height: 618,
 		Mac: application.MacWindow{
@@ -69,8 +85,6 @@ func main() {
 		URL:              "/",
 	})
 
-	// Create a goroutine that emits an event containing the current time every second.
-	// The frontend can listen to this event and update the UI accordingly.
 	go func() {
 		for {
 			now := time.Now().Format(time.RFC1123)
@@ -79,10 +93,8 @@ func main() {
 		}
 	}()
 
-	// Run the application. This blocks until the application has been exited.
-	err := app.Run()
+	err = app.Run()
 
-	// If an error occurred while running the application, log it and exit.
 	if err != nil {
 		log.Fatal(err)
 	}
