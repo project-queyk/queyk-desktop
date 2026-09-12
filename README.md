@@ -12,6 +12,10 @@
 
 **Queyk Desktop** is the desktop client for the Queyk earthquake safety and monitoring system. Built with Go, Wails v3, React 18, and TypeScript, it serves as a monitoring interface and admin panel that queries PostgreSQL directly for local readings while connecting to the central backend API for AI summaries, PDF reports, and IoT device resets.
 
+<p align="center">
+  <img src="docs/screenshots/queyk.png" alt="Queyk Desktop Dashboard" width="100%" />
+</p>
+
 ---
 
 ## 1. Overview & Features
@@ -270,13 +274,13 @@ Compiled binaries are output to the `bin/` directory.
 
 ## 7. Related Repositories
 
-| Subsystem           | Stack                                  | Description                                                                            | Link                              |
-| :------------------ | :------------------------------------- | :------------------------------------------------------------------------------------- | :-------------------------------- |
+| Subsystem           | Stack                                  | Description                                                                            | Link                                                            |
+| :------------------ | :------------------------------------- | :------------------------------------------------------------------------------------- | :-------------------------------------------------------------- |
 | **`queyk-iot`**     | C++, ESP32, Omron D7S                  | On-site seismic sensing hardware and telemetry transmitter.                            | [queyk-iot](https://github.com/project-queyk/queyk-iot)         |
 | **`queyk-backend`** | Node.js, Express 5, Go, PostgreSQL     | Central API gateway, WebSocket telemetry stream, push notifications, and AI summaries. | [queyk-backend](https://github.com/project-queyk/queyk-backend) |
 | **`queyk-web`**     | Next.js 15, React 19, Better Auth, PWA | Public safety portal, mobile-friendly PWA, and web monitoring dashboard.               | [queyk-web](https://github.com/project-queyk/queyk-web)         |
 | **`queyk-mobile`**  | React Native, Expo SDK 54              | Early warning mobile app with background evacuation tracking.                          | [queyk-mobile](https://github.com/project-queyk/queyk-mobile)   |
-| **`queyk-desktop`** | Go 1.25, Wails v3, React 18            | Desktop monitoring and admin client for security desks and operations offices.         | [queyk-desktop](https://github.com/project-queyk/queyk-desktop)               |
+| **`queyk-desktop`** | Go 1.25, Wails v3, React 18            | Desktop monitoring and admin client for security desks and operations offices.         | [queyk-desktop](https://github.com/project-queyk/queyk-desktop) |
 
 ---
 
