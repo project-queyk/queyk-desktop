@@ -5,6 +5,7 @@ import {
   isRedirect,
 } from "@tanstack/react-router";
 
+import { useWindowTitle } from "@/main";
 import { getSession, useSession } from "@/lib/auth-client";
 
 import Header from "@/components/shared/Header";
@@ -43,6 +44,7 @@ export const Route = createFileRoute("/_main")({
 });
 
 function MainLayout() {
+  useWindowTitle();
   const { data: session } = useSession();
 
   return (
