@@ -5,6 +5,13 @@
 // @ts-ignore: Unused imports
 import * as pgtype$0 from "../../../../../github.com/jackc/pgx/v5/pgtype/models.js";
 
+export interface GetAuthContextByTokenRow {
+    "session_id": string;
+    "user_id": pgtype$0.UUID;
+    "expires_at": pgtype$0.Timestamp;
+    "user_role": string;
+}
+
 export interface ListEarthquakesRow {
     "id": pgtype$0.UUID;
     "magnitude": number;

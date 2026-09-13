@@ -13,12 +13,12 @@ import * as postgres$0 from "../adapters/postgresql/sqlc/models.js";
 // @ts-ignore: Unused imports
 import * as $models from "./models.js";
 
-export function GetReadingsOverview(startDate: string, endDate: string): $CancellablePromise<$models.ReadingsOverviewResult> {
-    return $Call.ByID(3919665680, startDate, endDate);
+export function GetReadingsOverview(token: string, startDate: string, endDate: string): $CancellablePromise<$models.ReadingsOverviewResult> {
+    return $Call.ByID(3919665680, token, startDate, endDate);
 }
 
-export function ListEarthquakes(): $CancellablePromise<postgres$0.ListEarthquakesRow[] | null> {
-    return $Call.ByID(3969331412);
+export function ListEarthquakes(token: string): $CancellablePromise<postgres$0.ListEarthquakesRow[] | null> {
+    return $Call.ByID(3969331412, token);
 }
 
 export function SavePDFReport(filePath: string, base64Content: string): $CancellablePromise<void> {

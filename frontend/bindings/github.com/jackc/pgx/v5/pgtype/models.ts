@@ -6,6 +6,11 @@ export type Bool = any;
 export type Text = any;
 
 /**
+ * Timestamp represents the PostgreSQL timestamp type.
+ */
+export type Timestamp = any;
+
+/**
  * Timestamptz represents the PostgreSQL timestamptz type.
  */
 export type Timestamptz = any;

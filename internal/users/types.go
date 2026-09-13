@@ -1,9 +1,13 @@
 package users
 
-import postgres "queyk/internal/adapters/postgresql/sqlc"
+import (
+	postgres "queyk/internal/adapters/postgresql/sqlc"
+	"queyk/internal/auth"
+)
 
 type Service struct {
 	queries *postgres.Queries
+	authSvc *auth.Service
 }
 
 type Pagination struct {

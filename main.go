@@ -50,14 +50,15 @@ func main() {
 
 	queries := postgres.New(pool)
 
-	userSvc := users.NewService(queries)
-	dashboardSvc := dashboard.NewService(queries)
+	authSvc := auth.NewService(queries)
+	userSvc := users.NewService(queries, authSvc)
+	dashboardSvc := dashboard.NewService(queries, authSvc)
 
 	app := application.New(application.Options{
 		Name:        "Queyk",
 		Description: "Desktop client for Queyk",
 		Services: []application.Service{
-			application.NewService(&auth.Service{}),
+			application.NewService(authSvc),
 			application.NewService(userSvc),
 			application.NewService(dashboardSvc),
 		},

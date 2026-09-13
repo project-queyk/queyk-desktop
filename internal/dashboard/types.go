@@ -2,6 +2,7 @@ package dashboard
 
 import (
 	postgres "queyk/internal/adapters/postgresql/sqlc"
+	"queyk/internal/auth"
 	"time"
 )
 
@@ -33,4 +34,5 @@ type EarthquakeItem struct {
 
 type Service struct {
 	queries *postgres.Queries
+	authSvc *auth.Service
 }

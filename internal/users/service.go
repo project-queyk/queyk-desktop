@@ -4,26 +4,52 @@ import (
 	"context"
 	"errors"
 	postgres "queyk/internal/adapters/postgresql/sqlc"
+	"queyk/internal/auth"
 	"queyk/internal/uuid"
 	"queyk/internal/validator"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func NewService(q *postgres.Queries) *Service {
-	return &Service{queries: q}
+func NewService(q *postgres.Queries, authSvc *auth.Service) *Service {
+	return &Service{queries: q, authSvc: authSvc}
 }
 
-func (s *Service) GetUser(id string) (postgres.User, error) {
+func (s *Service) GetUser(token, id string) (postgres.User, error) {
+	ctx := context.Background()
+
+	authCtx, err := s.authSvc.GetAuthContext(ctx, token)
+	if err != nil {
+		return postgres.User{}, err
+	}
+
 	u, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
 	}
 
-	return s.queries.GetUser(context.Background(), u)
+	isSelf := (authCtx.UserID == u)
+	isAdmin := (authCtx.UserRole == "admin")
+
+	if !isSelf && !isAdmin {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
+	return s.queries.GetUser(ctx, u)
 }
 
-func (s *Service) ListUsers(name string, page, pageSize int) (ListUsersResult, error) {
+func (s *Service) ListUsers(token, name string, page, pageSize int) (ListUsersResult, error) {
+	ctx := context.Background()
+
+	authCtx, err := s.authSvc.GetAuthContext(ctx, token)
+	if err != nil {
+		return ListUsersResult{}, err
+	}
+
+	if authCtx.UserRole != "admin" {
+		return ListUsersResult{}, errors.New("forbidden: insufficient permissions")
+	}
+
 	if page < 1 {
 		page = 1
 	}
@@ -33,7 +59,7 @@ func (s *Service) ListUsers(name string, page, pageSize int) (ListUsersResult, e
 	}
 	offset := (page - 1) * pageSize
 
-	rows, err := s.queries.ListUsers(context.Background(), postgres.ListUsersParams{
+	rows, err := s.queries.ListUsers(ctx, postgres.ListUsersParams{
 		Column1: name,
 		Limit:   int32(pageSize),
 		Offset:  int32(offset),
@@ -65,7 +91,18 @@ func (s *Service) ListUsers(name string, page, pageSize int) (ListUsersResult, e
 	}, nil
 }
 
-func (s *Service) UpdateUserRole(id, role string) (postgres.User, error) {
+func (s *Service) UpdateUserRole(token, id, role string) (postgres.User, error) {
+	ctx := context.Background()
+
+	authCtx, err := s.authSvc.GetAuthContext(ctx, token)
+	if err != nil {
+		return postgres.User{}, err
+	}
+
+	if authCtx.UserRole != "admin" {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
 	u, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
@@ -75,54 +112,109 @@ func (s *Service) UpdateUserRole(id, role string) (postgres.User, error) {
 		return postgres.User{}, errors.New("invalid role parameter")
 	}
 
-	return s.queries.UpdateUserRole(context.Background(), postgres.UpdateUserRoleParams{ID: u, Role: role})
+	return s.queries.UpdateUserRole(ctx, postgres.UpdateUserRoleParams{ID: u, Role: role})
 }
 
-func (s *Service) UpdateUserAlertNotification(id string, enabled bool) (postgres.User, error) {
+func (s *Service) UpdateUserAlertNotification(token, id string, enabled bool) (postgres.User, error) {
+	ctx := context.Background()
+
+	authCtx, err := s.authSvc.GetAuthContext(ctx, token)
+	if err != nil {
+		return postgres.User{}, err
+	}
+
+	if authCtx.UserRole != "admin" {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
 	u, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
 	}
 
-	return s.queries.UpdateUserAlertNotification(context.Background(), postgres.UpdateUserAlertNotificationParams{ID: u, AlertNotification: enabled})
+	return s.queries.UpdateUserAlertNotification(ctx, postgres.UpdateUserAlertNotificationParams{ID: u, AlertNotification: enabled})
 }
 
-func (s *Service) UpdateUserSMSNotification(id string, enabled bool) (postgres.User, error) {
+func (s *Service) UpdateUserSMSNotification(token, id string, enabled bool) (postgres.User, error) {
+	ctx := context.Background()
+
+	authCtx, err := s.authSvc.GetAuthContext(ctx, token)
+	if err != nil {
+		return postgres.User{}, err
+	}
+
+	if authCtx.UserRole != "admin" {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
 	u, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
 	}
 
-	return s.queries.UpdateUserSMSNotification(context.Background(), postgres.UpdateUserSMSNotificationParams{ID: u, SmsNotification: enabled})
+	return s.queries.UpdateUserSMSNotification(ctx, postgres.UpdateUserSMSNotificationParams{ID: u, SmsNotification: enabled})
 }
 
-func (s *Service) UpdateUserPhoneNumber(id, phone string) (postgres.User, error) {
+func (s *Service) UpdateUserPhoneNumber(token, id, phone string) (postgres.User, error) {
 	if err := validator.ValidatePHMobile(phone); err != nil {
 		return postgres.User{}, err
 	}
 
+	ctx := context.Background()
+
+	authCtx, err := s.authSvc.GetAuthContext(ctx, token)
+	if err != nil {
+		return postgres.User{}, err
+	}
+
+	if authCtx.UserRole != "admin" {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
 	u, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
 	}
 
-	return s.queries.UpdateUserPhoneNumber(context.Background(), postgres.UpdateUserPhoneNumberParams{ID: u, PhoneNumber: pgtype.Text{String: phone, Valid: true}})
+	return s.queries.UpdateUserPhoneNumber(ctx, postgres.UpdateUserPhoneNumberParams{ID: u, PhoneNumber: pgtype.Text{String: phone, Valid: true}})
 }
 
-func (s *Service) RemoveUserPhoneNumber(id string) (postgres.User, error) {
+func (s *Service) RemoveUserPhoneNumber(token, id string) (postgres.User, error) {
+	ctx := context.Background()
+
+	authCtx, err := s.authSvc.GetAuthContext(ctx, token)
+	if err != nil {
+		return postgres.User{}, err
+	}
+
+	if authCtx.UserRole != "admin" {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
 	u, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
 	}
 
-	return s.queries.RemoveUserPhoneNumber(context.Background(), u)
+	return s.queries.RemoveUserPhoneNumber(ctx, u)
 }
 
-func (s *Service) DeleteUser(id string) (postgres.User, error) {
+func (s *Service) DeleteUser(token, id string) (postgres.User, error) {
+	ctx := context.Background()
+
+	authCtx, err := s.authSvc.GetAuthContext(ctx, token)
+	if err != nil {
+		return postgres.User{}, err
+	}
+
+	if authCtx.UserRole != "admin" {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
 	u, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
 	}
 
-	return s.queries.DeleteUser(context.Background(), u)
+	return s.queries.DeleteUser(ctx, u)
 }

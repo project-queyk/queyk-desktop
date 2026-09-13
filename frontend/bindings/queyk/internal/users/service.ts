@@ -13,34 +13,34 @@ import * as postgres$0 from "../adapters/postgresql/sqlc/models.js";
 // @ts-ignore: Unused imports
 import * as $models from "./models.js";
 
-export function DeleteUser(id: string): $CancellablePromise<postgres$0.User> {
-    return $Call.ByID(4156616746, id);
+export function DeleteUser(token: string, id: string): $CancellablePromise<postgres$0.User> {
+    return $Call.ByID(4156616746, token, id);
 }
 
-export function GetUser(id: string): $CancellablePromise<postgres$0.User> {
-    return $Call.ByID(16926945, id);
+export function GetUser(token: string, id: string): $CancellablePromise<postgres$0.User> {
+    return $Call.ByID(16926945, token, id);
 }
 
-export function ListUsers(name: string, page: number, pageSize: number): $CancellablePromise<$models.ListUsersResult> {
-    return $Call.ByID(1996698694, name, page, pageSize);
+export function ListUsers(token: string, name: string, page: number, pageSize: number): $CancellablePromise<$models.ListUsersResult> {
+    return $Call.ByID(1996698694, token, name, page, pageSize);
 }
 
-export function RemoveUserPhoneNumber(id: string): $CancellablePromise<postgres$0.User> {
-    return $Call.ByID(4191500978, id);
+export function RemoveUserPhoneNumber(token: string, id: string): $CancellablePromise<postgres$0.User> {
+    return $Call.ByID(4191500978, token, id);
 }
 
-export function UpdateUserAlertNotification(id: string, enabled: boolean): $CancellablePromise<postgres$0.User> {
-    return $Call.ByID(3547939389, id, enabled);
+export function UpdateUserAlertNotification(token: string, id: string, enabled: boolean): $CancellablePromise<postgres$0.User> {
+    return $Call.ByID(3547939389, token, id, enabled);
 }
 
-export function UpdateUserPhoneNumber(id: string, phone: string): $CancellablePromise<postgres$0.User> {
-    return $Call.ByID(2899866661, id, phone);
+export function UpdateUserPhoneNumber(token: string, id: string, phone: string): $CancellablePromise<postgres$0.User> {
+    return $Call.ByID(2899866661, token, id, phone);
 }
 
-export function UpdateUserRole(id: string, role: string): $CancellablePromise<postgres$0.User> {
-    return $Call.ByID(477441544, id, role);
+export function UpdateUserRole(token: string, id: string, role: string): $CancellablePromise<postgres$0.User> {
+    return $Call.ByID(477441544, token, id, role);
 }
 
-export function UpdateUserSMSNotification(id: string, enabled: boolean): $CancellablePromise<postgres$0.User> {
-    return $Call.ByID(3171738982, id, enabled);
+export function UpdateUserSMSNotification(token: string, id: string, enabled: boolean): $CancellablePromise<postgres$0.User> {
+    return $Call.ByID(3171738982, token, id, enabled);
 }

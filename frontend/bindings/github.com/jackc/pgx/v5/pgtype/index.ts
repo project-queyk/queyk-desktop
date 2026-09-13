@@ -4,6 +4,7 @@
 export type {
     Bool,
     Text,
+    Timestamp,
     Timestamptz,
     UUID
 } from "./models.js";

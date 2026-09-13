@@ -5,8 +5,16 @@
 // @ts-ignore: Unused imports
 import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wailsio/runtime";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as postgres$0 from "../adapters/postgresql/sqlc/models.js";
+
 export function CloseAuthWindow(): $CancellablePromise<void> {
     return $Call.ByID(2146774812);
+}
+
+export function GetAuthContext(token: string): $CancellablePromise<postgres$0.GetAuthContextByTokenRow> {
+    return $Call.ByID(2098297683, token);
 }
 
 export function OpenAuthWindow(url: string): $CancellablePromise<void> {
