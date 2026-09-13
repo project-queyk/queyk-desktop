@@ -6,7 +6,7 @@ import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 import { FileChartColumnIncreasing, Info, Power } from "lucide-react";
 import { createFileRoute, isRedirect, redirect } from "@tanstack/react-router";
 
-import { getSession } from "@/lib/auth-client";
+import { getSession, useSession } from "@/lib/auth-client";
 import type { ReadingItem } from "../../../bindings/queyk/internal/dashboard/models";
 import {
   GetReadingsOverview,
@@ -80,6 +80,9 @@ export const Route = createFileRoute("/_main/")({
 });
 
 function Dashboard() {
+  const { data: sessionData } = useSession();
+  const token = sessionData?.session?.token;
+
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(),
     to: new Date(),
@@ -99,9 +102,16 @@ function Dashboard() {
   }, [cooldown]);
 
   const { data: readingsData, isLoading: readingsDataIsLoading } = useQuery({
-    queryKey: ["readings", date?.from, date?.to],
+    queryKey: [
+      "readings",
+      date?.from?.toISOString().split("T")[0],
+      date?.to?.toISOString().split("T")[0],
+      token,
+    ],
     queryFn: async () => {
       if (!date?.from || !date?.to) return null;
+
+      if (!token) throw new Error("No authorization token");
 
       const fromDate = new Date(date.from);
       fromDate.setHours(0, 0, 0, 0);
@@ -110,25 +120,29 @@ function Dashboard() {
       toDate.setHours(23, 59, 59, 999);
 
       return await GetReadingsOverview(
+        token,
         fromDate.toISOString(),
         toDate.toISOString(),
       );
     },
-    enabled: !!(date?.from && date?.to),
+    enabled: !!(date?.from && date?.to) && !!token,
   });
 
   const { data: remoteReportData, isLoading: remoteReportIsLoading } = useQuery(
     {
-      queryKey: ["remote-report", date?.from, date?.to],
+      queryKey: [
+        "readings",
+        date?.from?.toISOString().split("T")[0],
+        date?.to?.toISOString().split("T")[0],
+        token,
+      ],
       queryFn: async () => {
         if (!date?.from || !date?.to) return null;
 
+        if (!token) throw new Error("No authorization token");
+
         const baseUrl =
           import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-        const token =
-          typeof window !== "undefined"
-            ? localStorage.getItem("bearer_token") || ""
-            : "";
 
         const fromDate = new Date(date.from);
         fromDate.setHours(0, 0, 0, 0);
@@ -155,16 +169,20 @@ function Dashboard() {
 
         return response.json();
       },
-      enabled: !!(date?.from && date?.to),
+      enabled: !!(date?.from && date?.to) && !!token,
     },
   );
 
   const { data: earthquakesData, isLoading: earthquakeDataIsLoading } =
     useQuery({
-      queryKey: ["earthquakes"],
+      queryKey: ["earthquakes", token],
       queryFn: async () => {
-        return await ListEarthquakes();
+        if (!token) throw new Error("No authorization token");
+
+        return await ListEarthquakes(token);
       },
+      enabled: !!token,
+      staleTime: 1000 * 60 * 5,
     });
 
   const { mutate: resetIoT, isPending: resetIoTIsPending } = useMutation({

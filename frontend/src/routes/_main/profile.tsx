@@ -50,22 +50,26 @@ export const Route = createFileRoute("/_main/profile")({
 function Profile() {
   const { setTheme, theme } = useTheme();
   const queryClient = useQueryClient();
-  const { data: session } = useSession();
+  const { data: sessionData } = useSession();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
   const [isDeletePhoneAlertOpen, setIsDeletePhoneAlertOpen] = useState(false);
   const [isEmailAlertOpen, setIsEmailAlertOpen] = useState(false);
   const [isSmsAlertOpen, setIsSmsAlertOpen] = useState(false);
 
-  const userId = session?.user?.id;
+  const userId = sessionData?.user?.id;
+  const token = sessionData?.session?.token;
 
   const { data: userData, isLoading: userDataIsLoading } = useQuery({
     queryKey: ["user", userId],
     queryFn: async () => {
       if (!userId) return null;
-      return await GetUser(userId);
+
+      if (!token) throw new Error("No authorization token");
+
+      return await GetUser(token, userId);
     },
-    enabled: !!userId,
+    enabled: !!userId && !!token,
   });
 
   const rawPhone =
@@ -79,7 +83,10 @@ function Profile() {
   } = useMutation({
     mutationFn: async (newValue: boolean) => {
       if (!userId) throw new Error("User not found");
-      return await UpdateUserAlertNotification(userId, newValue);
+
+      if (!token) throw new Error("No authorization token");
+
+      return await UpdateUserAlertNotification(token, userId, newValue);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", userId] });
@@ -92,7 +99,10 @@ function Profile() {
   } = useMutation({
     mutationFn: async (newValue: boolean) => {
       if (!userId) throw new Error("User not found");
-      return await UpdateUserSMSNotification(userId, newValue);
+
+      if (!token) throw new Error("No authorization token");
+
+      return await UpdateUserSMSNotification(token, userId, newValue);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", userId] });
@@ -103,7 +113,10 @@ function Profile() {
     useMutation({
       mutationFn: async (newValue: string) => {
         if (!userId) throw new Error("User not found");
-        return await UpdateUserPhoneNumber(userId, `+63${newValue}`);
+
+        if (!token) throw new Error("No authorization token");
+
+        return await UpdateUserPhoneNumber(token, userId, `+63${newValue}`);
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["user", userId] });
@@ -114,7 +127,10 @@ function Profile() {
     useMutation({
       mutationFn: async () => {
         if (!userId) throw new Error("User not found");
-        return await RemoveUserPhoneNumber(userId);
+
+        if (!token) throw new Error("No authorization token");
+
+        return await RemoveUserPhoneNumber(token, userId);
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["user", userId] });
@@ -160,19 +176,21 @@ function Profile() {
           <div className="flex items-center gap-2 md:gap-4">
             <img
               src={
-                session?.user?.image ||
-                (session?.user as any)?.profileImage ||
+                sessionData?.user?.image ||
+                (sessionData?.user as any)?.profileImage ||
                 "/placeholder-avatar.svg"
               }
               width={45}
               height={45}
-              alt={`${session?.user?.name ?? ""} name`}
+              alt={`${sessionData?.user?.name ?? ""} name`}
               className="size-11 rounded-full object-cover"
             />
             <div className="min-w-0">
-              <p className="truncate font-semibold">{session?.user?.name}</p>
+              <p className="truncate font-semibold">
+                {sessionData?.user?.name}
+              </p>
               <p className="text-muted-foreground truncate text-sm font-medium">
-                {session?.user?.email}
+                {sessionData?.user?.email}
               </p>
             </div>
           </div>

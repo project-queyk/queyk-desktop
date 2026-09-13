@@ -85,7 +85,7 @@ export const Route = createFileRoute("/_main/user-management")({
 });
 
 function UserManagement() {
-  const { data: session } = useSession();
+  const { data: sessionData } = useSession();
   const queryClient = useQueryClient();
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -95,6 +95,8 @@ function UserManagement() {
   const [debouncedFilter, setDebouncedFilter] = useState("");
   const [userToDelete, setUserToDelete] = useState<ListUsersRow | null>(null);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+
+  const token = sessionData?.session?.token;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -111,12 +113,16 @@ function UserManagement() {
       debouncedFilter,
     ],
     queryFn: async () => {
+      if (!token) throw new Error("No authorization token");
+
       return await ListUsers(
+        token,
         debouncedFilter,
         pagination.pageIndex + 1,
         pagination.pageSize,
       );
     },
+    enabled: !!token,
   });
 
   const toggleNotification = useMutation({
@@ -127,7 +133,9 @@ function UserManagement() {
       userId: string;
       currentValue: boolean;
     }) => {
-      return await UpdateUserAlertNotification(userId, !currentValue);
+      if (!token) throw new Error("No authorization token");
+
+      return await UpdateUserAlertNotification(token, userId, !currentValue);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -142,7 +150,9 @@ function UserManagement() {
       userId: string;
       currentValue: boolean;
     }) => {
-      return await UpdateUserSMSNotification(userId, !currentValue);
+      if (!token) throw new Error("No authorization token");
+
+      return await UpdateUserSMSNotification(token, userId, !currentValue);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -157,7 +167,9 @@ function UserManagement() {
       userId: string;
       newRole: string;
     }) => {
-      return await UpdateUserRole(userId, newRole);
+      if (!token) throw new Error("No authorization token");
+
+      return await UpdateUserRole(token, userId, newRole);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -166,7 +178,9 @@ function UserManagement() {
 
   const deleteUserMutation = useMutation({
     mutationFn: async (userId: string) => {
-      return await DeleteUser(userId);
+      if (!token) throw new Error("No authorization token");
+
+      return await DeleteUser(token, userId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -304,7 +318,7 @@ function UserManagement() {
         header: "",
         cell: ({ row }) => {
           const user = row.original;
-          const currentUserEmail = session?.user?.email;
+          const currentUserEmail = sessionData?.user?.email;
 
           if (user.email === currentUserEmail) {
             return null;
@@ -393,7 +407,7 @@ function UserManagement() {
       },
     ],
     [
-      session?.user?.email,
+      sessionData?.user?.email,
       updateRole,
       toggleNotification,
       toggleSMSNotification,
