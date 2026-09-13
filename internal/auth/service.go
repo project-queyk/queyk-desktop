@@ -1,11 +1,19 @@
 package auth
 
 import (
+	"context"
+	"errors"
+	"fmt"
+	postgres "queyk/internal/adapters/postgresql/sqlc"
 	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/events"
 )
+
+func NewService(q *postgres.Queries) *Service {
+	return &Service{queries: q}
+}
 
 func (s *Service) OpenAuthWindow(url string) {
 	s.mu.Lock()
@@ -56,4 +64,17 @@ func (s *Service) CloseAuthWindow() {
 			win.Close()
 		})
 	}
+}
+
+func (s *Service) GetAuthContext(ctx context.Context, token string) (postgres.GetAuthContextByTokenRow, error) {
+	if token == "" {
+		return postgres.GetAuthContextByTokenRow{}, errors.New("missing token")
+	}
+
+	authCtx, err := s.queries.GetAuthContextByToken(ctx, token)
+	if err != nil {
+		return postgres.GetAuthContextByTokenRow{}, fmt.Errorf("invalid or expired session: %w", err)
+	}
+
+	return authCtx, nil
 }
