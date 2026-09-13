@@ -3,16 +3,18 @@ package dashboard
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"os"
 	postgres "queyk/internal/adapters/postgresql/sqlc"
+	"queyk/internal/auth"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func NewService(q *postgres.Queries) *Service {
-	return &Service{queries: q}
+func NewService(q *postgres.Queries, authSvc *auth.Service) *Service {
+	return &Service{queries: q, authSvc: authSvc}
 }
 
 func GetSeismicRiskLevel(si float64) string {
@@ -42,8 +44,17 @@ func GetEarthquakeRiskLevel(magnitude float64) string {
 	return "severe"
 }
 
-func (s *Service) GetReadingsOverview(startDate, endDate string) (ReadingsOverviewResult, error) {
+func (s *Service) GetReadingsOverview(token, startDate, endDate string) (ReadingsOverviewResult, error) {
 	ctx := context.Background()
+
+	authCtx, err := s.authSvc.GetAuthContext(ctx, token)
+	if err != nil {
+		return ReadingsOverviewResult{}, err
+	}
+
+	if authCtx.UserRole != "admin" {
+		return ReadingsOverviewResult{}, errors.New("forbidden: insufficient permissions")
+	}
 
 	startTime, err := time.Parse(time.RFC3339, startDate)
 	if err != nil {
@@ -100,11 +111,22 @@ func (s *Service) GetReadingsOverview(startDate, endDate string) (ReadingsOvervi
 	}, nil
 }
 
-func (s *Service) ListEarthquakes() ([]postgres.ListEarthquakesRow, error) {
-	return s.queries.ListEarthquakes(context.Background())
+func (s *Service) ListEarthquakes(token string) ([]postgres.ListEarthquakesRow, error) {
+	ctx := context.Background()
+
+	authCtx, err := s.authSvc.GetAuthContext(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+
+	if authCtx.UserRole != "admin" {
+		return nil, errors.New("forbidden: insufficient permissions")
+	}
+
+	return s.queries.ListEarthquakes(ctx)
 }
 
-func (s *Service) SavePDFReport(filePath string, base64Content string) error {
+func (s *Service) SavePDFReport(filePath, base64Content string) error {
 	data, err := base64.StdEncoding.DecodeString(base64Content)
 	if err != nil {
 		return fmt.Errorf("failed to decode base64: %w", err)
