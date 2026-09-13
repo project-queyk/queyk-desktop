@@ -25,6 +25,17 @@ type Reading struct {
 	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 }
 
+type Session struct {
+	ID        string           `json:"id"`
+	ExpiresAt pgtype.Timestamp `json:"expires_at"`
+	Token     string           `json:"token"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	IpAddress pgtype.Text      `json:"ip_address"`
+	UserAgent pgtype.Text      `json:"user_agent"`
+	UserID    pgtype.UUID      `json:"user_id"`
+}
+
 type Token struct {
 	ID        pgtype.UUID        `json:"id"`
 	Type      string             `json:"type"`
