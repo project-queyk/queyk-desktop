@@ -42,10 +42,11 @@ Queyk Desktop provides security officers, safety coordinators, and administrator
 - **Safety Protocols**:
   - Emergency instructions for before, during, and after an earthquake based on NDRRMC and PHIVOLCS guidelines.
   - Reference guide for the PHIVOLCS Earthquake Intensity Scale (PEIS).
-- **Google OAuth Authentication**:
+- **Security & Google OAuth Authentication**:
   - Opens Google sign-in in a native popup window managed by Wails (`app.Window.NewWithOptions`).
   - Passes tokens back to the main window via `BroadcastChannel` and Wails events (`auth-window-closed`).
-  - Verifies sessions through Better Auth and stores bearer tokens in `localStorage`.
+  - Verifies sessions via Better Auth on the frontend, retrieving bearer tokens directly from React state (`useSession`) and passing them securely through Wails bindings.
+  - Enforces zero-trust authorization at the Go backend level. Every sensitive service invocation validates the incoming token against the database using a fast, single-trip SQL `JOIN` (`GetAuthContext`) to guarantee active session authenticity and retrieve the user's role before processing.
 - **User Management**:
   - Paginated user list with search, role selection (`admin` / `user`), and phone number editing.
 
@@ -71,7 +72,7 @@ flowchart TD
 
     subgraph GoBackend ["Go Backend (Wails v3 Runtime)"]
         Main["main.go (App & Window Setup)"]
-        AuthSvc["internal/auth (OAuth Popup Window)"]
+        AuthSvc["internal/auth (OAuth Window & Session Validation)"]
         UserSvc["internal/users (User Service)"]
         DashSvc["internal/dashboard (Readings, Earthquakes, PDF Save)"]
         SQLC["internal/adapters/postgresql/sqlc (Generated Queries)"]
@@ -94,7 +95,10 @@ flowchart TD
     TQ --> RemoteAPI
     TQ --> IoTReset
     Bindings --> UserSvc & DashSvc
-    UserSvc & DashSvc --> SQLC --> Pool --> DB
+    UserSvc & DashSvc -- "Validate Token" --> AuthSvc
+    AuthSvc --> SQLC
+    UserSvc & DashSvc --> SQLC
+    SQLC --> Pool --> DB
     AuthC --> OAuthEP
     AuthSvc --> Main
     WSDK --> Main
