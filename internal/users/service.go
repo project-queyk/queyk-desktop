@@ -123,16 +123,19 @@ func (s *Service) UpdateUserAlertNotification(token, id string, enabled bool) (p
 		return postgres.User{}, err
 	}
 
-	if authCtx.UserRole != "admin" {
-		return postgres.User{}, errors.New("forbidden: insufficient permissions")
-	}
-
-	u, err := uuid.Parse(id)
+	userUUID, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
 	}
 
-	return s.queries.UpdateUserAlertNotification(ctx, postgres.UpdateUserAlertNotificationParams{ID: u, AlertNotification: enabled})
+	isSelf := (authCtx.UserID == userUUID)
+	isAdmin := (authCtx.UserRole == "admin")
+
+	if !isSelf && !isAdmin {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
+	return s.queries.UpdateUserAlertNotification(ctx, postgres.UpdateUserAlertNotificationParams{ID: userUUID, AlertNotification: enabled})
 }
 
 func (s *Service) UpdateUserSMSNotification(token, id string, enabled bool) (postgres.User, error) {
@@ -143,16 +146,19 @@ func (s *Service) UpdateUserSMSNotification(token, id string, enabled bool) (pos
 		return postgres.User{}, err
 	}
 
-	if authCtx.UserRole != "admin" {
-		return postgres.User{}, errors.New("forbidden: insufficient permissions")
-	}
-
-	u, err := uuid.Parse(id)
+	userUUID, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
 	}
 
-	return s.queries.UpdateUserSMSNotification(ctx, postgres.UpdateUserSMSNotificationParams{ID: u, SmsNotification: enabled})
+	isSelf := (authCtx.UserID == userUUID)
+	isAdmin := (authCtx.UserRole == "admin")
+
+	if !isSelf && !isAdmin {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
+	return s.queries.UpdateUserSMSNotification(ctx, postgres.UpdateUserSMSNotificationParams{ID: userUUID, SmsNotification: enabled})
 }
 
 func (s *Service) UpdateUserPhoneNumber(token, id, phone string) (postgres.User, error) {
@@ -167,16 +173,19 @@ func (s *Service) UpdateUserPhoneNumber(token, id, phone string) (postgres.User,
 		return postgres.User{}, err
 	}
 
-	if authCtx.UserRole != "admin" {
-		return postgres.User{}, errors.New("forbidden: insufficient permissions")
-	}
-
-	u, err := uuid.Parse(id)
+	userUUID, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
 	}
 
-	return s.queries.UpdateUserPhoneNumber(ctx, postgres.UpdateUserPhoneNumberParams{ID: u, PhoneNumber: pgtype.Text{String: phone, Valid: true}})
+	isSelf := (authCtx.UserID == userUUID)
+	isAdmin := (authCtx.UserRole == "admin")
+
+	if !isSelf && !isAdmin {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
+	return s.queries.UpdateUserPhoneNumber(ctx, postgres.UpdateUserPhoneNumberParams{ID: userUUID, PhoneNumber: pgtype.Text{String: phone, Valid: true}})
 }
 
 func (s *Service) RemoveUserPhoneNumber(token, id string) (postgres.User, error) {
@@ -187,16 +196,19 @@ func (s *Service) RemoveUserPhoneNumber(token, id string) (postgres.User, error)
 		return postgres.User{}, err
 	}
 
-	if authCtx.UserRole != "admin" {
-		return postgres.User{}, errors.New("forbidden: insufficient permissions")
-	}
-
-	u, err := uuid.Parse(id)
+	userUUID, err := uuid.Parse(id)
 	if err != nil {
 		return postgres.User{}, err
 	}
 
-	return s.queries.RemoveUserPhoneNumber(ctx, u)
+	isSelf := (authCtx.UserID == userUUID)
+	isAdmin := (authCtx.UserRole == "admin")
+
+	if !isSelf && !isAdmin {
+		return postgres.User{}, errors.New("forbidden: insufficient permissions")
+	}
+
+	return s.queries.RemoveUserPhoneNumber(ctx, userUUID)
 }
 
 func (s *Service) DeleteUser(token, id string) (postgres.User, error) {
